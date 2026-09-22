@@ -91,3 +91,11 @@ unbounded behaviour. See the speed section in SKILL.md for the measured numbers.
   at first engine load, loudly.
 - Orukeet: re-run `orukeet install` after upgrading the wheel; the receipt pins
   absolute paths.
+
+## Published locations
+
+- Runner and skill: https://github.com/Fornace/metal-auk (`skills/auk`)
+- Apple Silicon card with the measured tuning: https://huggingface.co/fornace-ml/metal-auk
+- Model and MLX backend: https://github.com/Tencent-Hunyuan/AuK (MIT), weights at
+  tencent/AuK and tencent/AuK-Flash
+- Runnable 8-bit bundle: https://huggingface.co/smcleod/AuK-MLX-8bit

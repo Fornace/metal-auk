@@ -13,6 +13,11 @@ Install lives at `~/works/repos/AuK` (repo, venv, weights). Weights:
 `ckpts/mlx-8bit` (smcleod/AuK-MLX-8bit, 7.7 GB, flash + base + thinker).
 See [docs/INSTALL.md](docs/INSTALL.md) before touching the environment.
 
+This skill is published at [Fornace/metal-auk](https://github.com/Fornace/metal-auk)
+(clone to `~/works/repos/metal-auk`, symlink `skills/auk` into place) with the measured
+tuning in its README, and as the Hugging Face card
+[fornace-ml/metal-auk](https://huggingface.co/fornace-ml/metal-auk).
+
 ## Run it
 
 ```bash
@@ -25,6 +30,9 @@ $AU $SK verify --audio generated/auk/say-*.wav --expect "Hello from the runner"
 
 All commands: `say instruct edit run pe batch verify doctor`. `--json` prints a full
 receipt (timings, RTF, peak RSS, dbfs). Outputs default to `generated/auk/`.
+Speed on this machine lives in `scripts/auk_profile.py`, which times each stage behind
+an `mx.eval` barrier; the measured defaults are the 4 GB MLX cache cap and the flash
+variant.
 
 ## Every preset
 
