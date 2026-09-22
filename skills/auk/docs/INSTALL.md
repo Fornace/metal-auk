@@ -6,10 +6,20 @@ differs; the skill reads `AUK_HOME` (default `~/works/repos/AuK`).
 ## 1. Repo and weights
 
 ```bash
+git clone https://github.com/Fornace/metal-auk ~/works/repos/metal-auk
 git clone -b feat/mlx-apple-silicon https://github.com/Tencent-Hunyuan/AuK.git ~/works/repos/AuK
 cd ~/works/repos/AuK
 hf download smcleod/AuK-MLX-8bit --local-dir ckpts/mlx-8bit   # 7.7 GB
 ```
+
+The skill itself lives in the metal-auk repo at `skills/auk`, and is normally
+symlinked into place:
+
+```bash
+ln -s ~/works/repos/metal-auk/skills/auk ~/.pi/agent/skills/auk
+```
+
+Nothing below depends on pi: `scripts/auk.py` runs standalone.
 
 `ckpts/mlx-8bit` must contain `config_flash.yaml`, `config_base.yaml`,
 `qwen/` (thinker) and the DiT safetensors for both variants.
@@ -64,10 +74,10 @@ needed: the cloud ASR path is replaced by local Orukeet.
 ## 5. Check
 
 ```bash
-~/works/repos/AuK/.venv/bin/python ~/.pi/agent/skills/auk/scripts/auk.py doctor
+$AUK_HOME/.venv/bin/python ~/.pi/agent/skills/auk/scripts/auk.py doctor
 ```
 
-23 checks green on a healthy install. One of them is `mlx cache bounded`: the runner
+26 checks green on a healthy install. One of them is `mlx cache bounded`: the runner
 caps MLX's allocator cache at 4 GB, because left unbounded it grows past 27 GB and makes
 macOS compress and swap, which costs about 3.7x on a 14 s job. Change it with
 `--cache-limit GB` per run or `AUK_MLX_CACHE_LIMIT` per environment; `0` restores the

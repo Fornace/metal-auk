@@ -307,7 +307,9 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
 
         limit_gb = Settings().cache_limit_gb
         mx.set_cache_limit(int(limit_gb * 1e9))
-        want("mlx cache bounded", True, f"{limit_gb:.1f} GB default; unbounded measures about 2x slower")
+        want("mlx cache bounded", True,
+             f"{limit_gb:.1f} GB default; unbounded swapped 13.5 GB and took 26-28 s "
+             f"where 4 GB took 7.5 s on a 14 s enhancement")
     except Exception as exc:  # a real failure: MLX could not bound its allocator cache
         want("mlx cache bounded", False, str(exc))
 
@@ -331,7 +333,8 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
     want("prompt enhancer", os.path.isfile(os.path.join(INSTALL_ROOT, "src/auk/infer/pe.py")))
     skills = Path(__file__).resolve().parent
     for name in ("auk.py", "auk_tasks.py", "auk_values.py", "auk_duration.py",
-                 "auk_restoration.py", "auk_verify.py", "auk_pe.py"):
+                 "auk_lengths.py", "auk_restoration.py", "auk_verify.py", "auk_pe.py",
+                 "auk_profile.py"):
         want(f"runner {name}", (skills / name).is_file())
     want("brain config", Path(os.environ.get(
         "AUK_PE_CONFIG", os.path.join(INSTALL_ROOT, "src/auk/infer/pe.config.yaml"))).is_file())

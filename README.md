@@ -19,7 +19,7 @@ auk edit     --preset restore --audio phone.wav --effect telephone
 auk batch    --jobs jobs.jsonl                           many jobs, one model load
 auk verify   --audio out.wav --source in.wav             transcript and measurements
 auk pe       --instruction "clean up this noisy recording" --audio bad.wav
-auk doctor                                              23 install checks
+auk doctor                                              26 install checks
 ```
 
 The 21 presets cover the whole upstream task surface: content replace, insert and
@@ -156,7 +156,7 @@ Chinese keeps a whisper fallback, since Orukeet has no Chinese.
 
 `skills/auk/SKILL.md` is the agent-facing document, and it is where the quirks
 live in the form that prevents them: which instruction to reach for, what each
-measurement means, and every trap this test pass uncovered. `auk doctor` runs 23
+measurement means, and every trap this test pass uncovered. `auk doctor` runs 26
 checks and fails loudly rather than falling back.
 
 ## Credit and license
