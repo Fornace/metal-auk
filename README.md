@@ -38,8 +38,9 @@ Lengths are computed from upstream's own duration rules, ported and tested, so
 ## Install
 
 See [docs/INSTALL.md](skills/auk/docs/INSTALL.md). Short version: clone Tencent's
-MLX branch, pull 8-bit weights, build a Python 3.12 venv, install three undeclared
-upstream dependencies, then run `auk doctor`.
+MLX branch, pull 8-bit weights, build a Python 3.12 venv, add the dependencies upstream
+forgot to declare (jinja2, audioread, av, plus the Prompt Enhancer's openai import), then
+run `auk doctor`.
 
 The skill is meant to live at `~/.pi/agent/skills/auk`, which can be a symlink to
 `skills/auk` in this repo. Nothing in it depends on pi: the CLI runs standalone.
