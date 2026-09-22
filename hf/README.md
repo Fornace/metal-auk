@@ -31,6 +31,11 @@ plus a pi skill. It runs standalone, with no pi dependency.
 
 ## Run it
 
+Fastest route: paste the prompt in
+[docs/INSTALL-PROMPT.md](https://github.com/Fornace/metal-auk/blob/main/skills/auk/docs/INSTALL-PROMPT.md)
+into an agent on the Mac you want to run on. It installs the model, runner, weights and
+verifier, then proves the install by generating and transcribing a clip. By hand:
+
 ```bash
 git clone https://github.com/Fornace/metal-auk ~/works/repos/metal-auk
 git clone -b feat/mlx-apple-silicon https://github.com/Tencent-Hunyuan/AuK.git ~/works/repos/AuK
@@ -42,6 +47,7 @@ uv pip install --python .venv/bin/python jinja2 audioread av mlx-whisper openai 
   tencentcloud-sdk-python-asr                                  # undeclared upstream deps
 
 .venv/bin/python ~/works/repos/metal-auk/skills/auk/scripts/auk.py doctor
+.venv/bin/python ~/works/repos/metal-auk/skills/auk/scripts/auk.py env
 .venv/bin/python ~/works/repos/metal-auk/skills/auk/scripts/auk.py \
   say --text "Hello there." --ref voice.wav -o out.wav
 ```
