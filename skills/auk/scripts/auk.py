@@ -8,6 +8,7 @@
     auk batch --jobs jobs.jsonl --outdir out/
     auk verify --audio out.wav --expect "Hello there"
     auk doctor
+    auk env
 
 Every command prints a one-line result and can emit a JSON receipt with --json.
 """
@@ -204,6 +205,12 @@ def cmd_doctor(cache: engine_mod.EngineCache, args: argparse.Namespace) -> None:
     sys.exit(engine_mod.doctor(args.weights))
 
 
+def cmd_env(cache: engine_mod.EngineCache, args: argparse.Namespace) -> None:
+    import auk_config
+
+    sys.exit(auk_config.report(args.json))
+
+
 def cmd_pe(cache: engine_mod.EngineCache, args: argparse.Namespace) -> None:
     import auk_pe
 
@@ -283,6 +290,10 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("doctor", help="check weights, deps and store layout")
     s.add_argument("--weights", default=engine_mod.DEFAULT_WEIGHTS)
     s.set_defaults(func=cmd_doctor)
+
+    s = sub.add_parser("env", help="print resolved paths and configuration, exit 1 if one is missing")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_env)
     return p
 
 

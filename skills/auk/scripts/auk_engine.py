@@ -24,8 +24,10 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any
 
-INSTALL_ROOT = os.environ.get("AUK_HOME", os.path.expanduser("~/works/repos/AuK"))
-DEFAULT_WEIGHTS = os.path.join(INSTALL_ROOT, "ckpts", "mlx-8bit")
+INSTALL_ROOT = os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK")
+DEFAULT_WEIGHTS = os.path.expanduser(
+    os.environ.get("AUK_WEIGHTS") or os.path.join(INSTALL_ROOT, "ckpts", "mlx-8bit")
+)
 
 def peak_rss_gb() -> float:
     """Peak resident set size of this process in GB (macOS reports bytes)."""
@@ -297,10 +299,13 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
     import importlib.util
     import shutil
 
-    checks: list[tuple[str, bool, str]] = []
+    from auk_config import llm, orukeet_install, pe_config
 
-    def want(name: str, ok: bool, detail: str = "") -> None:
-        checks.append((name, ok, detail))
+    checks: list[tuple[str, bool, str, bool]] = []
+
+    def want(name: str, ok: bool, detail: str = "", optional: bool = False) -> None:
+        """Record a check. Optional ones report a gap without failing the install."""
+        checks.append((name, ok, detail, optional))
 
     try:
         import mlx.core as mx
@@ -326,26 +331,44 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
     want("weights complete", not missing and len(safetensors) >= 2,
          f"{weights} ({len(safetensors)} safetensors)" + (f"; missing {missing}" if missing else ""))
 
-    for mod in ("mlx", "transformers", "scipy", "soundfile", "qwen_omni_utils", "orukeet", "mlx_whisper",
-                "openai", "tencentcloud", "yaml"):
-        want(f"dep {mod}", importlib.util.find_spec(mod) is not None)
+    # Generation needs these. Orukeet backs verification and the clone length rule, so it is
+    # required. whisper (Chinese verification) and the enhancer's SDKs back optional commands,
+    # so a missing one is reported as a gap rather than a broken install.
+    required = ("mlx", "transformers", "scipy", "soundfile", "qwen_omni_utils", "orukeet")
+    for mod in ("mlx", "transformers", "scipy", "soundfile", "qwen_omni_utils", "orukeet",
+                "mlx_whisper", "openai", "tencentcloud", "yaml"):
+        want(f"dep {mod}", importlib.util.find_spec(mod) is not None,
+             optional=mod not in required)
 
-    want("prompt enhancer", os.path.isfile(os.path.join(INSTALL_ROOT, "src/auk/infer/pe.py")))
+    want("prompt enhancer", os.path.isfile(os.path.join(INSTALL_ROOT, "src/auk/infer/pe.py")),
+         optional=True)
     skills = Path(__file__).resolve().parent
     for name in ("auk.py", "auk_tasks.py", "auk_values.py", "auk_duration.py",
                  "auk_lengths.py", "auk_restoration.py", "auk_verify.py", "auk_pe.py",
-                 "auk_profile.py"):
+                 "auk_profile.py", "auk_config.py"):
         want(f"runner {name}", (skills / name).is_file())
-    want("brain config", Path(os.environ.get(
-        "AUK_PE_CONFIG", os.path.join(INSTALL_ROOT, "src/auk/infer/pe.config.yaml"))).is_file())
+    want("brain config", Path(pe_config()).is_file(), f"{pe_config()}", optional=True)
 
-    orukeet_install = Path.home() / "works/models/orukeet/installation.json"
-    want("orukeet weights", orukeet_install.is_file(), str(orukeet_install))
+    want("orukeet weights", Path(orukeet_install()).is_file(),
+         orukeet_install() if Path(orukeet_install()).is_file()
+         else f"{orukeet_install()} not found. It backs `verify` and the clone length rule "
+              f"(a say without --seconds transcribes the reference); set AUK_ORUKEET if it "
+              f"lives elsewhere")
+
+    llm_cfg = llm()
+    want("llm endpoint (pe)", bool(llm_cfg["key_set"] and llm_cfg["base_url"]),
+         f"{llm_cfg['base_url'] or 'unset'} model={llm_cfg['model']}, set LLM_BASE_URL and LLM_API_KEY",
+         optional=True)
 
     print(f"AuK doctor | weights {weights}")
-    bad = 0
-    for name, ok, detail in checks:
-        print(f"  {'ok  ' if ok else 'FAIL'} {name} {detail}")
-        bad += not ok
-    print(f"{len(checks) - bad}/{len(checks)} ok")
+    bad = gaps = 0
+    for name, ok, detail, optional in checks:
+        mark = "ok  " if ok else ("gap " if optional else "FAIL")
+        print(f"  {mark} {name} {detail}")
+        bad += not ok and not optional
+        gaps += not ok and optional
+    ok_count = len(checks) - bad - gaps
+    print(f"{ok_count}/{len(checks)} ok" + (f", {gaps} optional gap(s)" if gaps else ""))
+    if gaps:
+        print("Optional gaps limit specific commands, not generation. See `auk env`.")
     return 1 if bad else 0

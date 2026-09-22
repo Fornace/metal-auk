@@ -19,7 +19,8 @@ auk edit     --preset restore --audio phone.wav --effect telephone
 auk batch    --jobs jobs.jsonl                           many jobs, one model load
 auk verify   --audio out.wav --source in.wav             transcript and measurements
 auk pe       --instruction "clean up this noisy recording" --audio bad.wav
-auk doctor                                              26 install checks
+auk doctor                                              install checks
+auk env                                                 resolved paths and configuration
 ```
 
 The 21 presets cover the whole upstream task surface: content replace, insert and
@@ -37,10 +38,17 @@ Lengths are computed from upstream's own duration rules, ported and tested, so
 
 ## Install
 
-See [docs/INSTALL.md](skills/auk/docs/INSTALL.md). Short version: clone Tencent's
+Hand it to an agent: paste the prompt in
+[docs/INSTALL-PROMPT.md](skills/auk/docs/INSTALL-PROMPT.md), which installs the model, the
+runner, the weights and the verifier on any Mac and ends by generating and transcribing a
+clip to prove it.
+
+By hand: see [docs/INSTALL.md](skills/auk/docs/INSTALL.md). Short version: clone Tencent's
 MLX branch, pull 8-bit weights, build a Python 3.12 venv, add the dependencies upstream
 forgot to declare (jinja2, audioread, av, plus the Prompt Enhancer's openai import), then
-run `auk doctor`.
+run `auk doctor`. Nothing depends on a fixed home directory: `AUK_HOME`, `AUK_WEIGHTS`,
+`AUK_ORUKEET`, `AUK_PE_CONFIG` and `AUK_MLX_CACHE_LIMIT` move every path, and `auk env`
+prints what a run will use and exits 1 when something required is missing.
 
 The skill is meant to live at `~/.pi/agent/skills/auk`, which can be a symlink to
 `skills/auk` in this repo. Nothing in it depends on pi: the CLI runs standalone.
@@ -157,8 +165,8 @@ Chinese keeps a whisper fallback, since Orukeet has no Chinese.
 
 `skills/auk/SKILL.md` is the agent-facing document, and it is where the quirks
 live in the form that prevents them: which instruction to reach for, what each
-measurement means, and every trap this test pass uncovered. `auk doctor` runs 26
-checks and fails loudly rather than falling back.
+measurement means, and every trap this test pass uncovered. `auk doctor` separates required
+failures from optional gaps and fails loudly rather than falling back.
 
 ## Credit and license
 

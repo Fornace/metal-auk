@@ -23,8 +23,10 @@ import statistics
 import time
 from pathlib import Path
 
-AUK_ROOT = Path(os.environ.get("AUK_HOME", Path.home() / "works/repos/AuK"))
-ORUKEET_INSTALL = Path.home() / "works/models/orukeet/installation.json"
+AUK_ROOT = Path(os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK"))
+ORUKEET_INSTALL = Path(
+    os.path.expanduser(os.environ.get("AUK_ORUKEET") or "~/works/models/orukeet/installation.json")
+)
 
 _orukeet = None
 
@@ -63,6 +65,14 @@ def _transcribe_orukeet(path: str) -> tuple[str, str, float]:
     global _orukeet
     t0 = time.time()
     if _orukeet is None:
+        if not ORUKEET_INSTALL.is_file():
+            # Loud on purpose: a missing verifier must not quietly become a whisper run with
+            # different accuracy characteristics. Say what to do instead.
+            raise SystemExit(
+                f"Orukeet is not installed at {ORUKEET_INSTALL}. "
+                f"Install it (see the skill's docs/INSTALL.md) and point AUK_ORUKEET at its "
+                f"installation.json, or verify Chinese with --lang zh, which uses whisper."
+            )
         from orukeet import Orukeet
 
         inst = json.loads(ORUKEET_INSTALL.read_text())

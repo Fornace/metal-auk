@@ -22,7 +22,7 @@ from pathlib import Path
 
 import yaml
 
-AUK_HOME = Path(os.environ.get("AUK_HOME", Path.home() / "works/repos/AuK"))
+AUK_HOME = Path(os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK"))
 CONFIG = Path(
     os.environ.get("AUK_PE_CONFIG", AUK_HOME / "src/auk/infer/pe.config.yaml")
 )

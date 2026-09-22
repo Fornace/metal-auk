@@ -11,20 +11,27 @@ Apple Silicon Mac; 8-bit quantization is the validated default.
 
 Install lives at `~/works/repos/AuK` (repo, venv, weights). Weights:
 `ckpts/mlx-8bit` (smcleod/AuK-MLX-8bit, 7.7 GB, flash + base + thinker).
-See [docs/INSTALL.md](docs/INSTALL.md) before touching the environment.
+See [docs/INSTALL.md](docs/INSTALL.md) before touching the environment, or hand the install
+to an agent with [docs/INSTALL-PROMPT.md](docs/INSTALL-PROMPT.md).
 
 This skill is published at [Fornace/metal-auk](https://github.com/Fornace/metal-auk)
 (clone to `~/works/repos/metal-auk`, symlink `skills/auk` into place) with the measured
 tuning in its README, and as the Hugging Face card
 [fornace-ml/metal-auk](https://huggingface.co/fornace-ml/metal-auk).
 
+Paths come from the environment, so an install can sit anywhere: `AUK_HOME` for the install
+root, `AUK_WEIGHTS` for weights, `AUK_ORUKEET` for the verifier, `AUK_PE_CONFIG` for the
+enhancer's config, `AUK_MLX_CACHE_LIMIT` for the cache cap. `auk env` prints the resolved
+values and exits 1 when a required one is missing, so check it before a job rather than
+after one.
+
 ## Run it
 
 ```bash
-AU=~/works/repos/AuK/.venv/bin/python
-SK=~/.pi/agent/skills/auk/scripts/auk.py
+AU=$AUK_HOME/.venv/bin/python
+SK=$AUK_HOME/../metal-auk/skills/auk/scripts/auk.py   # or this skill's own scripts/auk.py
 
-$AU $SK say --text "Hello from the runner." --ref ~/works/repos/AuK/assets/demo-input-audio/zero-shot-tts/ref.wav
+$AU $SK say --text "Hello from the runner." --ref $AUK_HOME/assets/demo-input-audio/zero-shot-tts/ref.wav
 $AU $SK verify --audio generated/auk/say-*.wav --expect "Hello from the runner"
 ```
 

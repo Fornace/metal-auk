@@ -1,7 +1,21 @@
 # AuK MLX install (Apple Silicon, validated 2026-09-22)
 
-Machine this was built on: M5 Max, 48 GB, macOS 27. Adapt paths if `AUK_HOME`
-differs; the skill reads `AUK_HOME` (default `~/works/repos/AuK`).
+Machine this was built on: M5 Max, 48 GB, macOS 27. Nothing below depends on that: every
+path comes from an environment variable, and **the fastest route is to hand the whole job
+to an agent with [INSTALL-PROMPT.md](INSTALL-PROMPT.md)**, which walks these same steps on
+the target machine and ends by proving the install.
+
+| variable | meaning | default |
+|---|---|---|
+| `AUK_HOME` | install root with the repo, the venv and `ckpts` | `~/works/repos/AuK` |
+| `AUK_WEIGHTS` | weights directory | `$AUK_HOME/ckpts/mlx-8bit` |
+| `AUK_ORUKEET` | Orukeet `installation.json` | `~/works/models/orukeet/installation.json` |
+| `AUK_PE_CONFIG` | `pe.config.yaml` for the enhancer | `$AUK_HOME/src/auk/infer/pe.config.yaml` |
+| `AUK_MLX_CACHE_LIMIT` | GB cap on MLX's allocator cache | `4` |
+| `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL_NAME` | OpenAI-compatible endpoint for `auk pe` only | unset |
+
+`auk env` prints what a run will actually use, marks what is missing, and exits 1 when a
+required path is absent. `METAL_AUK` below stands for the clone of this repo.
 
 ## 1. Repo and weights
 
@@ -74,21 +88,23 @@ needed: the cloud ASR path is replaced by local Orukeet.
 ## 5. Check
 
 ```bash
-$AUK_HOME/.venv/bin/python ~/.pi/agent/skills/auk/scripts/auk.py doctor
+$AUK_HOME/.venv/bin/python $METAL_AUK/skills/auk/scripts/auk.py doctor
+$AUK_HOME/.venv/bin/python $METAL_AUK/skills/auk/scripts/auk.py env
 ```
 
-26 checks green on a healthy install. One of them is `mlx cache bounded`: the runner
-caps MLX's allocator cache at 4 GB, because left unbounded it grows past 27 GB and makes
-macOS compress and swap, which costs about 3.7x on a 14 s job. Change it with
-`--cache-limit GB` per run or `AUK_MLX_CACHE_LIMIT` per environment; `0` restores the
-unbounded behaviour. See the speed section in SKILL.md for the measured numbers.
+Both must exit 0. `doctor` separates required failures from optional gaps on purpose: a
+missing Orukeet is required, because it backs `verify` and the clone length rule, while a
+missing enhancer endpoint is only a gap. One check is `mlx cache bounded`: the runner caps
+MLX's allocator cache at 4 GB, because left unbounded it grows past 27 GB and makes macOS
+compress and swap, which costs about 3.7x on a 14 s job. Change it with `--cache-limit GB`
+per run or `AUK_MLX_CACHE_LIMIT` per environment; `0` restores the unbounded behaviour. See
+the speed section in SKILL.md for the measured numbers.
 
 ## Update notes
 
-- Upstream branch moves: `git -C ~/works/repos/AuK pull` on
-  `feat/mlx-apple-silicon`, then re-run doctor. The runner only imports
-  `auk_mlx.infer` (AukMLX, GenerateOptions); API drift shows up as an ImportError
-  at first engine load, loudly.
+- Upstream branch moves: `git -C "$AUK_HOME" pull` on `feat/mlx-apple-silicon`, then re-run
+  doctor. The runner only imports `auk_mlx.infer` (AukMLX, GenerateOptions); API drift shows
+  up as an ImportError at first engine load, loudly.
 - Orukeet: re-run `orukeet install` after upgrading the wheel; the receipt pins
   absolute paths.
 
