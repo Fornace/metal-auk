@@ -180,12 +180,14 @@ def cmd_batch(cache: engine_mod.EngineCache, args: argparse.Namespace) -> None:
                     cache, task, instr, output, settings_from(args),
                     source_audio=job.get("audio"), gen_seconds=seconds, notes=notes,
                 )
-                receipts.append(receipt)
-                print(f"ok   [{lineno:3d}] {task:18s} {receipt.audio_seconds:5.2f}s in {receipt.generate_seconds:6.2f}s -> {receipt.output}")
+                receipts.append(receipt.as_dict())
+                print(f"ok   [{lineno:3d}] {task:18s} {receipt.audio_seconds:5.2f}s in {receipt.generate_seconds:6.2f}s -> {receipt.output}",
+                      file=sys.stderr if args.json else sys.stdout)
             except Exception as exc:  # one bad job must not kill the batch, but it must be visible
                 failures += 1
                 receipts.append({"line": lineno, "task": job.get("preset") or job.get("task"), "error": f"{type(exc).__name__}: {exc}"})
-                print(f"FAIL [{lineno:3d}] {job.get('preset') or job.get('task')}: {type(exc).__name__}: {exc}")
+                print(f"FAIL [{lineno:3d}] {job.get('preset') or job.get('task')}: {type(exc).__name__}: {exc}",
+                      file=sys.stderr if args.json else sys.stdout)
 
     if args.json:
         print(json.dumps({"jobs": len(receipts), "failures": failures, "receipts": receipts}, indent=2))
