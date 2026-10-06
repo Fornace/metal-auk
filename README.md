@@ -38,6 +38,12 @@ Lengths are computed from upstream's own duration rules, ported and tested, so
 
 ## Install
 
+On a Fornace Mac the weights are registered by reference at `~/Models/auk-current` (links to the
+weights, this runner, the AuK venv and the Orukeet verifier, plus `generation.json` with the card's
+settings). The private registry installs and verifies them: `Fornace/mac-models`, `./install.sh auk`.
+Quality work (references, dialogue) uses `--variant base` (32 steps, CFG 2.0); flash is for drafts.
+
+
 Hand it to an agent: paste the prompt in
 [docs/INSTALL-PROMPT.md](skills/auk/docs/INSTALL-PROMPT.md), which installs the model, the
 runner, the weights and the verifier on any Mac and ends by generating and transcribing a
