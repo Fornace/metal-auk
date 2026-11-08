@@ -20,8 +20,8 @@ tuning in its README, and as the Hugging Face card
 [fornace-ml/metal-auk](https://huggingface.co/fornace-ml/metal-auk).
 
 Paths come from the environment, so an install can sit anywhere: `AUK_HOME` for the install
-root, `AUK_WEIGHTS` for weights, `AUK_ORUKEET_BIN` (default `~/Models/orukeet-current/bin/orukeet`) or
-`AUK_ORUKEET` for the verifier, `AUK_PE_CONFIG` for the
+root, `AUK_WEIGHTS` for weights, `AUK_ORUKEET_BIN` (default `~/Models/orukeet-current/bin/orukeet`) for the
+verifier (`AUK_ORUKEET` only on a Mac without that CLI), `AUK_PE_CONFIG` for the
 enhancer's config, `AUK_MLX_CACHE_LIMIT` for the cache cap. `auk env` prints the resolved
 values and exits 1 when a required one is missing, so check it before a job rather than
 after one.
@@ -333,7 +333,7 @@ read these as order of magnitude.
 
 Orukeet r3 q8 (oruk/orukeet, released 2026-09-09, Parakeet TDT 0.6B v3 finetune,
 25 European languages, beats Parakeet on 61/74 splits, LibriSpeech test-clean
-1.46% WER) on Metal, installed at `~/works/models/orukeet`. It replaced
+1.46% WER) on Metal through the orukeet-metal CLI at `~/Models/orukeet-current/bin/orukeet`. It replaced
 mlx-whisper as the verifier: 13x faster per clip and more accurate. Chinese falls
 back to whisper-large-v3-turbo (first zh call downloads 1.6 GB).
 

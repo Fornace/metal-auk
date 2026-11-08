@@ -36,8 +36,8 @@ Then install, with these defaults, and export AUK_HOME if you put it anywhere el
 - verifier: on a Fornace Mac `cd ~/works/repos/mac-models && ./install.sh orukeet` (native, used by default);
   otherwise uv pip install --python .venv/bin/python
   https://github.com/Oruk-AI/orukeet/releases/download/v0.1.1/orukeet-0.1.1-py3-none-any.whl
-  then .venv/bin/orukeet install --device auto --cache ~/works/models/orukeet
-  --output ~/works/models/orukeet/installation.json
+  then .venv/bin/orukeet install --device auto --cache $AUK_HOME/orukeet
+  --output $AUK_HOME/orukeet/installation.json
 - skill:    ln -s ~/works/repos/metal-auk/skills/auk ~/.pi/agent/skills/auk
 
 Do NOT install Python 3.10. The newest scipy wheel for 3.10 is Mach-O invalid on macOS 27,
@@ -48,7 +48,7 @@ my shell profile and print the exact lines:
   AUK_HOME        install root, default ~/works/repos/AuK
   AUK_WEIGHTS     weights directory, default $AUK_HOME/ckpts/mlx-8bit
   AUK_ORUKEET_BIN Orukeet CLI, default ~/Models/orukeet-current/bin/orukeet (registry install)
-  AUK_ORUKEET     fallback: Orukeet installation.json, default ~/works/models/orukeet/installation.json
+  AUK_ORUKEET     pip wheel installation.json, read only when the CLI is absent, default $AUK_HOME/orukeet/installation.json
   AUK_PE_CONFIG   pe.config.yaml, default $AUK_HOME/src/auk/infer/pe.config.yaml
   AUK_MLX_CACHE_LIMIT   GB cap on MLX's allocator cache, default 4
   LLM_BASE_URL, LLM_API_KEY, LLM_MODEL_NAME   any OpenAI-compatible endpoint, for `auk pe` only
@@ -82,8 +82,8 @@ Two things are yours to decide, and the prompt stops for both rather than invent
 answer:
 
 - Where the install lives. The defaults put the runner and the model in `~/works/repos`
-  and the verifier in `~/works/models`. Any other layout works, since every path comes from
-  an environment variable.
+  and the verifier at `~/Models/orukeet-current` (pip wheel: `$AUK_HOME/orukeet`). Any other
+  layout works, since every path comes from an environment variable.
 - The Prompt Enhancer's text model. `auk pe` needs an OpenAI-compatible endpoint and key.
   Everything else, including all generation, editing, restoration and verification, runs
   fully local without one.

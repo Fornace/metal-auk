@@ -23,10 +23,10 @@ import statistics
 import time
 from pathlib import Path
 
+from auk_config import orukeet_bin, orukeet_install
+
 AUK_ROOT = Path(os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK"))
-ORUKEET_INSTALL = Path(
-    os.path.expanduser(os.environ.get("AUK_ORUKEET") or "~/works/models/orukeet/installation.json")
-)
+ORUKEET_INSTALL = Path(orukeet_install())
 
 _orukeet = None
 
@@ -61,14 +61,12 @@ def transcribe(path: str, lang: str = "en") -> tuple[str, str, float]:
     return _transcribe_orukeet(path)
 
 
-ORUKEET_BIN = Path(
-    os.path.expanduser(os.environ.get("AUK_ORUKEET_BIN") or "~/Models/orukeet-current/bin/orukeet")
-)
+ORUKEET_BIN = Path(orukeet_bin())
 
 
 def _transcribe_orukeet(path: str) -> tuple[str, str, float]:
-    """Orukeet through the orukeet-metal install (mac-models `orukeet`, the fornace-speech toolkit) when present,
-    else through the pip package's installation.json."""
+    """Orukeet through the orukeet-metal CLI (mac-models `orukeet`, the fornace-speech toolkit); on a Mac without
+    it, through the pip wheel's installation.json."""
     global _orukeet
     t0 = time.time()
     if os.access(ORUKEET_BIN, os.X_OK):
@@ -86,8 +84,8 @@ def _transcribe_orukeet(path: str) -> tuple[str, str, float]:
             # Loud on purpose: a missing verifier must not quietly become a whisper run with
             # different accuracy characteristics. Say what to do instead.
             raise SystemExit(
-                f"Orukeet is not installed at {ORUKEET_INSTALL}. "
-                f"Install it (see the skill's docs/INSTALL.md) and point AUK_ORUKEET at its "
+                f"Orukeet is not installed: no CLI at {ORUKEET_BIN} and no {ORUKEET_INSTALL}. "
+                f"Install it (see the skill's docs/INSTALL.md) and point AUK_ORUKEET_BIN at the CLI or AUK_ORUKEET at the wheel's "
                 f"installation.json, or verify Chinese with --lang zh, which uses whisper."
             )
         from orukeet import Orukeet

@@ -9,7 +9,8 @@ the target machine and ends by proving the install.
 |---|---|---|
 | `AUK_HOME` | install root with the repo, the venv and `ckpts` | `~/works/repos/AuK` |
 | `AUK_WEIGHTS` | weights directory | `$AUK_HOME/ckpts/mlx-8bit` |
-| `AUK_ORUKEET` | Orukeet `installation.json` | `~/works/models/orukeet/installation.json` |
+| `AUK_ORUKEET_BIN` | Orukeet CLI (orukeet-metal) | `~/Models/orukeet-current/bin/orukeet` |
+| `AUK_ORUKEET` | pip wheel `installation.json`, read only when the CLI is absent | `$AUK_HOME/orukeet/installation.json` |
 | `AUK_PE_CONFIG` | `pe.config.yaml` for the enhancer | `$AUK_HOME/src/auk/infer/pe.config.yaml` |
 | `AUK_MLX_CACHE_LIMIT` | GB cap on MLX's allocator cache | `4` |
 | `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL_NAME` | OpenAI-compatible endpoint for `auk pe` only | unset |
@@ -74,13 +75,13 @@ On a Fornace Mac, install the native build once through the model registry. `ver
 cd ~/works/repos/mac-models && ./install.sh orukeet
 ```
 
-Elsewhere, the pip wheel (read through `AUK_ORUKEET`):
+Elsewhere, the pip wheel (read through `AUK_ORUKEET` when the CLI is absent):
 
 ```bash
 uv pip install --python .venv/bin/python \
   https://github.com/Oruk-AI/orukeet/releases/download/v0.1.1/orukeet-0.1.1-py3-none-any.whl
-.venv/bin/orukeet install --device auto --cache ~/works/models/orukeet \
-  --output ~/works/models/orukeet/installation.json
+.venv/bin/orukeet install --device auto --cache "$AUK_HOME/orukeet" \
+  --output "$AUK_HOME/orukeet/installation.json"
 ```
 
 `--device auto` picks Metal on Apple Silicon. The installer downloads the q8 GGUF
@@ -114,8 +115,8 @@ the speed section in SKILL.md for the measured numbers.
 - Upstream branch moves: `git -C "$AUK_HOME" pull` on `feat/mlx-apple-silicon`, then re-run
   doctor. The runner only imports `auk_mlx.infer` (AukMLX, GenerateOptions); API drift shows
   up as an ImportError at first engine load, loudly.
-- Orukeet: re-run `orukeet install` after upgrading the wheel; the receipt pins
-  absolute paths.
+- Orukeet: on a Fornace Mac `./install.sh orukeet` moves `~/Models/orukeet-current` to the new release; with the
+  pip wheel, re-run `orukeet install` after upgrading it (the receipt pins absolute paths).
 
 ## Published locations
 

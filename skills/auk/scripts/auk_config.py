@@ -8,7 +8,8 @@ see what a run will actually use before paying for a model load.
     AUK_WEIGHTS           weights directory, default $AUK_HOME/ckpts/mlx-8bit
     AUK_ORUKEET_BIN       Orukeet CLI used by `verify` (default ~/Models/orukeet-current/bin/orukeet,
                           mac-models `./install.sh orukeet`)
-    AUK_ORUKEET           fallback: the pip package's installation.json
+    AUK_ORUKEET           only where that CLI is absent: the pip wheel's installation.json,
+                          default $AUK_HOME/orukeet/installation.json
     AUK_PE_CONFIG         pe.config.yaml used by `pe`
     AUK_MLX_CACHE_LIMIT   GB cap on MLX's allocator cache, default 4
     LLM_BASE_URL, LLM_API_KEY, LLM_MODEL_NAME   OpenAI-compatible endpoint for `pe`
@@ -26,7 +27,6 @@ import os
 from pathlib import Path
 
 DEFAULT_HOME = "~/works/repos/AuK"
-DEFAULT_ORUKEET = "~/works/models/orukeet/installation.json"
 WHISPER_REPO = "mlx-community/whisper-large-v3-turbo"
 
 
@@ -47,7 +47,14 @@ def orukeet_bin() -> str:
 
 
 def orukeet_install() -> str:
-    return _expand(os.environ.get("AUK_ORUKEET"), DEFAULT_ORUKEET)
+    return _expand(os.environ.get("AUK_ORUKEET"), os.path.join(install_root(), "orukeet/installation.json"))
+
+
+def orukeet_verifier() -> str | None:
+    """The Orukeet engine `verify` will use: the native CLI, else the pip wheel's installation.json."""
+    if os.access(orukeet_bin(), os.X_OK):
+        return orukeet_bin()
+    return orukeet_install() if os.path.isfile(orukeet_install()) else None
 
 
 def pe_config(root: str | None = None) -> str:
@@ -81,7 +88,7 @@ def resolve() -> dict:
     root = install_root()
     weights = weights_dir(root)
     python = os.path.join(root, ".venv/bin/python")
-    orukeet = orukeet_install()
+    orukeet = orukeet_verifier()
     pe = pe_config(root)
     variants = [
         name
@@ -95,9 +102,8 @@ def resolve() -> dict:
                    "set_with": "create it: python3.12 -m venv <install_root>/.venv"},
         "weights": {"path": weights, "exists": os.path.isdir(weights), "required": True,
                     "variants": variants, "set_with": "AUK_WEIGHTS"},
-        "orukeet": {"path": orukeet_bin() if os.access(orukeet_bin(), os.X_OK) else orukeet,
-                    "exists": os.access(orukeet_bin(), os.X_OK) or os.path.isfile(orukeet), "required": True,
-                    "set_with": "AUK_ORUKEET",
+        "orukeet": {"path": orukeet or orukeet_bin(), "exists": orukeet is not None, "required": True,
+                    "set_with": "AUK_ORUKEET_BIN",
                     "used_by": "verify, and the clone length rule: a say without --seconds "
                                "transcribes the reference clip"},
         "pe_config": {"path": pe, "exists": os.path.isfile(pe), "required": False,
@@ -143,7 +149,7 @@ def report(as_json: bool) -> int:
     print(f"  export AUK_WEIGHTS={cfg['weights']['path']}" if os.environ.get("AUK_WEIGHTS") else
           "  # AUK_WEIGHTS defaults to $AUK_HOME/ckpts/mlx-8bit")
     if not cfg["orukeet"]["exists"]:
-        print(f"  export AUK_ORUKEET={cfg['orukeet']['path']}  # after installing Orukeet")
+        print(f"  export AUK_ORUKEET_BIN={cfg['orukeet']['path']}  # after installing Orukeet")
     if not (llm_cfg["key_set"] and llm_cfg["base_url"]):
         print("  export LLM_BASE_URL=<openai-compatible endpoint>  # for `auk pe` only")
         print("  export LLM_API_KEY=<key>")

@@ -299,7 +299,7 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
     import importlib.util
     import shutil
 
-    from auk_config import llm, orukeet_install, pe_config
+    from auk_config import llm, orukeet_bin, orukeet_verifier, pe_config
 
     checks: list[tuple[str, bool, str, bool]] = []
 
@@ -334,7 +334,7 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
     # Generation needs these. Orukeet backs verification and the clone length rule, so it is
     # required. whisper (Chinese verification) and the enhancer's SDKs back optional commands,
     # so a missing one is reported as a gap rather than a broken install.
-    required = ("mlx", "transformers", "scipy", "soundfile", "qwen_omni_utils", "orukeet")
+    required = ("mlx", "transformers", "scipy", "soundfile", "qwen_omni_utils")
     for mod in ("mlx", "transformers", "scipy", "soundfile", "qwen_omni_utils", "orukeet",
                 "mlx_whisper", "openai", "tencentcloud", "yaml"):
         want(f"dep {mod}", importlib.util.find_spec(mod) is not None,
@@ -349,10 +349,11 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
         want(f"runner {name}", (skills / name).is_file())
     want("brain config", Path(pe_config()).is_file(), f"{pe_config()}", optional=True)
 
-    want("orukeet weights", Path(orukeet_install()).is_file(),
-         orukeet_install() if Path(orukeet_install()).is_file()
-         else f"{orukeet_install()} not found. It backs `verify` and the clone length rule "
-              f"(a say without --seconds transcribes the reference); set AUK_ORUKEET if it "
+    verifier = orukeet_verifier()
+    want("orukeet verifier", verifier is not None,
+         verifier if verifier
+         else f"{orukeet_bin()} not found. It backs `verify` and the clone length rule "
+              f"(a say without --seconds transcribes the reference); set AUK_ORUKEET_BIN if it "
               f"lives elsewhere")
 
     llm_cfg = llm()
