@@ -26,7 +26,12 @@ Recon first, then tell me what you found before installing anything:
 - if ~/works/repos/AuK or ~/works/repos/metal-auk already exists, stop and ask whether to
   reuse or replace it.
 
-Then install, with these defaults, and export AUK_HOME if you put it anywhere else:
+On a Fornace Mac, install the release instead and skip to the checks:
+  cd ~/works/repos/mac-models && ./install.sh auk
+  (then run the checks below with ~/Models/auk-current/bin/auk in place of the venv python + auk.py)
+
+Otherwise install, with these defaults, and export AUK_HOME=~/works/repos/AuK (or wherever you
+put the clone; the runner's default is the Fornace release, ~/Models/auk-current):
 - runner:   git clone https://github.com/Fornace/metal-auk ~/works/repos/metal-auk
 - upstream: git clone -b feat/mlx-apple-silicon https://github.com/Tencent-Hunyuan/AuK.git ~/works/repos/AuK
 - weights:  cd ~/works/repos/AuK && hf download smcleod/AuK-MLX-8bit --local-dir ckpts/mlx-8bit
@@ -45,8 +50,8 @@ which is why the venv is 3.12.
 
 The runner finds everything from environment variables, so tell me which of these to put in
 my shell profile and print the exact lines:
-  AUK_HOME        install root, default ~/works/repos/AuK
-  AUK_WEIGHTS     weights directory, default $AUK_HOME/ckpts/mlx-8bit
+  AUK_HOME        install root, default ~/Models/auk-current (the Fornace release); a clone sets it
+  AUK_WEIGHTS     weights directory, default $AUK_HOME/weights, else $AUK_HOME/ckpts/mlx-8bit
   AUK_ORUKEET_BIN Orukeet CLI, default ~/Models/orukeet-current/bin/orukeet (registry install)
   AUK_ORUKEET     pip wheel installation.json, read only when the CLI is absent, default $AUK_HOME/orukeet/installation.json
   AUK_PE_CONFIG   pe.config.yaml, default $AUK_HOME/src/auk/infer/pe.config.yaml

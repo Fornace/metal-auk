@@ -9,10 +9,11 @@ AuK (Tencent-Hunyuan, branch `feat/mlx-apple-silicon`, MLX backend) generates an
 speech in one instruction-driven model. Everything runs locally on the GPU of an
 Apple Silicon Mac; 8-bit quantization is the validated default.
 
-Install lives at `~/works/repos/AuK` (repo, venv, weights). Weights:
-`ckpts/mlx-8bit` (smcleod/AuK-MLX-8bit, 7.7 GB, flash + base + thinker).
-See [docs/INSTALL.md](docs/INSTALL.md) before touching the environment, or hand the install
-to an agent with [docs/INSTALL-PROMPT.md](docs/INSTALL-PROMPT.md).
+On a Fornace Mac the install is the release at `~/Models/auk-current` (mac-models
+`./install.sh auk`, from Cloudflare R2): `bin/auk`, its own CPython 3.12 with AuK's dependencies,
+the AuK MLX source, this runner and `weights/` (smcleod/AuK-MLX-8bit, 8.3 GB, flash + base +
+thinker). Elsewhere, see [docs/INSTALL.md](docs/INSTALL.md) before touching the environment, or
+hand the install to an agent with [docs/INSTALL-PROMPT.md](docs/INSTALL-PROMPT.md).
 
 This skill is published at [Fornace/metal-auk](https://github.com/Fornace/metal-auk)
 (clone to `~/works/repos/metal-auk`, symlink `skills/auk` into place) with the measured
@@ -34,10 +35,10 @@ several takes.
 ## Run it
 
 ```bash
-AU=$AUK_HOME/.venv/bin/python
-SK=$AUK_HOME/../metal-auk/skills/auk/scripts/auk.py   # or this skill's own scripts/auk.py
+AU=~/Models/auk-current/python        # an upstream clone: $AUK_HOME/.venv/bin/python
+SK=~/Models/auk-current/runner.py     # or this skill's own scripts/auk.py
 
-$AU $SK say --text "Hello from the runner." --ref $AUK_HOME/assets/demo-input-audio/zero-shot-tts/ref.wav
+$AU $SK say --text "Hello from the runner." --ref voice.wav
 $AU $SK verify --audio generated/auk/say-*.wav --expect "Hello from the runner"
 ```
 
@@ -116,7 +117,7 @@ everywhere and only needed to override.
 
 ```bash
 $AU $SK pe --instruction "make this whisper sound normal, same speaker, same length" \
-  --audio ~/works/repos/AuK/assets/demo-input-audio/whisper/wh-w2n-zh-input.wav --run
+  --audio whisper.wav --run
 ```
 
 ## Defaults that matter

@@ -7,8 +7,8 @@ the target machine and ends by proving the install.
 
 | variable | meaning | default |
 |---|---|---|
-| `AUK_HOME` | install root with the repo, the venv and `ckpts` | `~/works/repos/AuK` |
-| `AUK_WEIGHTS` | weights directory | `$AUK_HOME/ckpts/mlx-8bit` |
+| `AUK_HOME` | install root: the release (`python`, `src`, `weights`) or a clone (`.venv`, `src`, `ckpts`) | `~/Models/auk-current` |
+| `AUK_WEIGHTS` | weights directory | `$AUK_HOME/weights`, else `$AUK_HOME/ckpts/mlx-8bit` |
 | `AUK_ORUKEET_BIN` | Orukeet CLI (orukeet-metal) | `~/Models/orukeet-current/bin/orukeet` |
 | `AUK_ORUKEET` | pip wheel `installation.json`, read only when the CLI is absent | `$AUK_HOME/orukeet/installation.json` |
 | `AUK_PE_CONFIG` | `pe.config.yaml` for the enhancer | `$AUK_HOME/src/auk/infer/pe.config.yaml` |
@@ -18,6 +18,18 @@ the target machine and ends by proving the install.
 `auk env` prints what a run will actually use, marks what is missing, and exits 1 when a
 required path is absent. `METAL_AUK` below stands for the clone of this repo.
 
+## On a Fornace Mac: the release
+
+```bash
+cd ~/works/repos/mac-models && ./install.sh auk
+~/Models/auk-current/bin/auk doctor && ~/Models/auk-current/bin/auk env
+```
+
+One download from Cloudflare R2, BLAKE3-checked: the 8-bit weights and a runtime with its own CPython
+3.12 and the pinned dependencies below, the AuK MLX source and this runner. `bin/auk` is the CLI and
+`python` the interpreter; both set `AUK_HOME` to the release. The steps below build the same thing by
+hand on any Mac.
+
 ## 1. Repo and weights
 
 ```bash
@@ -25,6 +37,7 @@ git clone https://github.com/Fornace/metal-auk ~/works/repos/metal-auk
 git clone -b feat/mlx-apple-silicon https://github.com/Tencent-Hunyuan/AuK.git ~/works/repos/AuK
 cd ~/works/repos/AuK
 hf download smcleod/AuK-MLX-8bit --local-dir ckpts/mlx-8bit   # 7.7 GB
+export AUK_HOME=~/works/repos/AuK   # the default is the release, ~/Models/auk-current
 ```
 
 The skill itself lives in the metal-auk repo at `skills/auk`, and is normally

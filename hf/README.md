@@ -41,6 +41,7 @@ git clone https://github.com/Fornace/metal-auk ~/works/repos/metal-auk
 git clone -b feat/mlx-apple-silicon https://github.com/Tencent-Hunyuan/AuK.git ~/works/repos/AuK
 cd ~/works/repos/AuK
 hf download smcleod/AuK-MLX-8bit --local-dir ckpts/mlx-8bit   # 7.7 GB, complete bundle
+export AUK_HOME=~/works/repos/AuK                             # install root for the runner
 
 uv venv --python 3.12 && uv pip install --python .venv/bin/python -e ".[mlx]"
 uv pip install --python .venv/bin/python jinja2 audioread av mlx-whisper openai \
