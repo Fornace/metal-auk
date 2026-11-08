@@ -4,8 +4,9 @@ Nothing here is machine specific. Every path comes from an environment variable 
 layout this project uses as the default, so an install can sit anywhere and an agent can
 see what a run will actually use before paying for a model load.
 
-    AUK_HOME              install root holding the repo, the venv and ckpts
-    AUK_WEIGHTS           weights directory, default $AUK_HOME/ckpts/mlx-8bit
+    AUK_HOME              install root: the mac-models release (default ~/Models/auk-current, with
+                          `python`, `src` and `weights`) or an upstream clone (`.venv`, `src`, `ckpts`)
+    AUK_WEIGHTS           weights directory, default $AUK_HOME/weights, else $AUK_HOME/ckpts/mlx-8bit
     AUK_ORUKEET_BIN       Orukeet CLI used by `verify` (default ~/Models/orukeet-current/bin/orukeet,
                           mac-models `./install.sh orukeet`)
     AUK_ORUKEET           only where that CLI is absent: the pip wheel's installation.json,
@@ -26,7 +27,7 @@ import json
 import os
 from pathlib import Path
 
-DEFAULT_HOME = "~/works/repos/AuK"
+DEFAULT_HOME = "~/Models/auk-current"
 WHISPER_REPO = "mlx-community/whisper-large-v3-turbo"
 
 
@@ -39,7 +40,18 @@ def install_root() -> str:
 
 
 def weights_dir(root: str | None = None) -> str:
-    return _expand(os.environ.get("AUK_WEIGHTS"), os.path.join(root or install_root(), "ckpts/mlx-8bit"))
+    root = root or install_root()
+    default = os.path.join(root, "weights")  # the release layout
+    if not os.path.isdir(default):
+        default = os.path.join(root, "ckpts/mlx-8bit")  # an upstream clone
+    return _expand(os.environ.get("AUK_WEIGHTS"), default)
+
+
+def python_path(root: str | None = None) -> str:
+    """The interpreter of the install: the release's `python`, else an upstream clone's venv."""
+    root = root or install_root()
+    release = os.path.join(root, "python")
+    return release if os.path.isfile(release) else os.path.join(root, ".venv/bin/python")
 
 
 def orukeet_bin() -> str:
@@ -87,7 +99,7 @@ def resolve() -> dict:
     """Everything a run needs, with existence checks and what to set when it is absent."""
     root = install_root()
     weights = weights_dir(root)
-    python = os.path.join(root, ".venv/bin/python")
+    python = python_path(root)
     orukeet = orukeet_verifier()
     pe = pe_config(root)
     variants = [
@@ -99,7 +111,7 @@ def resolve() -> dict:
         "install_root": {"path": root, "exists": os.path.isdir(root), "required": True,
                          "set_with": "AUK_HOME"},
         "python": {"path": python, "exists": os.path.isfile(python), "required": True,
-                   "set_with": "create it: python3.12 -m venv <install_root>/.venv"},
+                   "set_with": "install the release (mac-models install.sh auk) or create <install_root>/.venv"},
         "weights": {"path": weights, "exists": os.path.isdir(weights), "required": True,
                     "variants": variants, "set_with": "AUK_WEIGHTS"},
         "orukeet": {"path": orukeet or orukeet_bin(), "exists": orukeet is not None, "required": True,
@@ -147,7 +159,7 @@ def report(as_json: bool) -> int:
     print("export these to make the choices permanent:")
     print(f"  export AUK_HOME={cfg['install_root']['path']}")
     print(f"  export AUK_WEIGHTS={cfg['weights']['path']}" if os.environ.get("AUK_WEIGHTS") else
-          "  # AUK_WEIGHTS defaults to $AUK_HOME/ckpts/mlx-8bit")
+          "  # AUK_WEIGHTS defaults to $AUK_HOME/weights, else $AUK_HOME/ckpts/mlx-8bit")
     if not cfg["orukeet"]["exists"]:
         print(f"  export AUK_ORUKEET_BIN={cfg['orukeet']['path']}  # after installing Orukeet")
     if not (llm_cfg["key_set"] and llm_cfg["base_url"]):

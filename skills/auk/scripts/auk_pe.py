@@ -25,8 +25,10 @@ import os
 import sys
 from pathlib import Path
 
+from auk_config import install_root
+
 LLM_ENV = Path.home() / ".agent_credentials/envs/fornace-llm.env"
-PE_PATH = Path(os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK")) / "src/auk/infer/pe.py"
+PE_PATH = Path(install_root()) / "src/auk/infer/pe.py"
 
 _module = None
 

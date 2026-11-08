@@ -24,10 +24,11 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any
 
-INSTALL_ROOT = os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK")
-DEFAULT_WEIGHTS = os.path.expanduser(
-    os.environ.get("AUK_WEIGHTS") or os.path.join(INSTALL_ROOT, "ckpts", "mlx-8bit")
-)
+from auk_config import install_root, python_path, weights_dir  # noqa: E402
+
+INSTALL_ROOT = install_root()
+DEFAULT_WEIGHTS = weights_dir(INSTALL_ROOT)
+
 
 def peak_rss_gb() -> float:
     """Peak resident set size of this process in GB (macOS reports bytes)."""
@@ -318,9 +319,9 @@ def doctor(weights: str = DEFAULT_WEIGHTS) -> int:
     except Exception as exc:  # a real failure: MLX could not bound its allocator cache
         want("mlx cache bounded", False, str(exc))
 
-    venv = os.path.join(INSTALL_ROOT, ".venv/bin/python")
+    venv = python_path(INSTALL_ROOT)
     want("AuK repo", os.path.isdir(os.path.join(INSTALL_ROOT, "src/auk_mlx")), INSTALL_ROOT)
-    want("AuK venv", os.path.isfile(venv), venv)
+    want("AuK python", os.path.isfile(venv), venv)
 
     expect = [
         "config_flash.yaml", "config_base.yaml",

@@ -23,9 +23,9 @@ import statistics
 import time
 from pathlib import Path
 
-from auk_config import orukeet_bin, orukeet_install
+from auk_config import install_root, orukeet_bin, orukeet_install
 
-AUK_ROOT = Path(os.path.expanduser(os.environ.get("AUK_HOME") or "~/works/repos/AuK"))
+AUK_ROOT = Path(install_root())
 ORUKEET_INSTALL = Path(orukeet_install())
 
 _orukeet = None
