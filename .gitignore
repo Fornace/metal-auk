@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .venv/
 out/
+.DS_Store
+node_modules/
