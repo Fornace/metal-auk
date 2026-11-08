@@ -67,6 +67,15 @@ the HF Omni processor, not the inference path. Inference is MLX.
 
 ## 3. Orukeet verifier (replaces whisper for 25 languages)
 
+On a Fornace Mac, install the native build once through the model registry. `verify` uses it by default
+(`~/Models/orukeet-current/bin/orukeet`, override with `AUK_ORUKEET_BIN`), 0.25 s per clip:
+
+```bash
+cd ~/works/repos/mac-models && ./install.sh orukeet
+```
+
+Elsewhere, the pip wheel (read through `AUK_ORUKEET`):
+
 ```bash
 uv pip install --python .venv/bin/python \
   https://github.com/Oruk-AI/orukeet/releases/download/v0.1.1/orukeet-0.1.1-py3-none-any.whl

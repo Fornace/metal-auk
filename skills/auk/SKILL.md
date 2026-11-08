@@ -20,10 +20,16 @@ tuning in its README, and as the Hugging Face card
 [fornace-ml/metal-auk](https://huggingface.co/fornace-ml/metal-auk).
 
 Paths come from the environment, so an install can sit anywhere: `AUK_HOME` for the install
-root, `AUK_WEIGHTS` for weights, `AUK_ORUKEET` for the verifier, `AUK_PE_CONFIG` for the
+root, `AUK_WEIGHTS` for weights, `AUK_ORUKEET_BIN` (default `~/Models/orukeet-current/bin/orukeet`) or
+`AUK_ORUKEET` for the verifier, `AUK_PE_CONFIG` for the
 enhancer's config, `AUK_MLX_CACHE_LIMIT` for the cache cap. `auk env` prints the resolved
 values and exits 1 when a required one is missing, so check it before a job rather than
 after one.
+
+Around AuK, the `fornace-speech` skill has the native speech tools: `melband` pulls dialogue out of a mix
+(clean references and sources), `reuse` restores speech while keeping laughs and breaths, `orukeet` transcribes
+with word times and speakers, and `ears` scores quality, emotion and vocal sounds, useful to pick the best of
+several takes.
 
 ## Run it
 

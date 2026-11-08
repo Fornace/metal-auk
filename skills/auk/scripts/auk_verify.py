@@ -61,9 +61,26 @@ def transcribe(path: str, lang: str = "en") -> tuple[str, str, float]:
     return _transcribe_orukeet(path)
 
 
+ORUKEET_BIN = Path(
+    os.path.expanduser(os.environ.get("AUK_ORUKEET_BIN") or "~/Models/orukeet-current/bin/orukeet")
+)
+
+
 def _transcribe_orukeet(path: str) -> tuple[str, str, float]:
+    """Orukeet through the orukeet-metal install (mac-models `orukeet`, the fornace-speech toolkit) when present,
+    else through the pip package's installation.json."""
     global _orukeet
     t0 = time.time()
+    if os.access(ORUKEET_BIN, os.X_OK):
+        import subprocess
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "t.json")
+            subprocess.run([str(ORUKEET_BIN), "transcribe", path, "-f", "json", "-o", out, "--force"],
+                           check=True, capture_output=True, timeout=600)
+            text = json.load(open(out)).get("text", "")
+        return text, "orukeet-metal-q8", time.time() - t0
     if _orukeet is None:
         if not ORUKEET_INSTALL.is_file():
             # Loud on purpose: a missing verifier must not quietly become a whisper run with

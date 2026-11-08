@@ -33,7 +33,8 @@ Then install, with these defaults, and export AUK_HOME if you put it anywhere el
 - venv:     cd ~/works/repos/AuK && uv venv --python 3.12 && uv pip install --python .venv/bin/python -e ".[mlx]"
 - upstream forgot to declare: uv pip install --python .venv/bin/python jinja2 audioread av
   mlx-whisper openai tencentcloud-sdk-python-asr
-- verifier: uv pip install --python .venv/bin/python
+- verifier: on a Fornace Mac `cd ~/works/repos/mac-models && ./install.sh orukeet` (native, used by default);
+  otherwise uv pip install --python .venv/bin/python
   https://github.com/Oruk-AI/orukeet/releases/download/v0.1.1/orukeet-0.1.1-py3-none-any.whl
   then .venv/bin/orukeet install --device auto --cache ~/works/models/orukeet
   --output ~/works/models/orukeet/installation.json
@@ -46,7 +47,8 @@ The runner finds everything from environment variables, so tell me which of thes
 my shell profile and print the exact lines:
   AUK_HOME        install root, default ~/works/repos/AuK
   AUK_WEIGHTS     weights directory, default $AUK_HOME/ckpts/mlx-8bit
-  AUK_ORUKEET     Orukeet installation.json, default ~/works/models/orukeet/installation.json
+  AUK_ORUKEET_BIN Orukeet CLI, default ~/Models/orukeet-current/bin/orukeet (registry install)
+  AUK_ORUKEET     fallback: Orukeet installation.json, default ~/works/models/orukeet/installation.json
   AUK_PE_CONFIG   pe.config.yaml, default $AUK_HOME/src/auk/infer/pe.config.yaml
   AUK_MLX_CACHE_LIMIT   GB cap on MLX's allocator cache, default 4
   LLM_BASE_URL, LLM_API_KEY, LLM_MODEL_NAME   any OpenAI-compatible endpoint, for `auk pe` only
@@ -64,8 +66,8 @@ Then the smoke test, which is the only real proof:
     --ref $AUK_HOME/assets/demo-input-audio/zero-shot-tts/ref.wav -o /tmp/auk-install-check.wav
   $AUK_HOME/.venv/bin/python .../auk.py verify --audio /tmp/auk-install-check.wav \
     --expect "The install works on this machine"
-The verify line must report PASS with high word accuracy and name orukeet-r3-q8-metal as the
-engine. If it names whisper instead, the Orukeet wiring is wrong even though the words match,
+The verify line must report PASS with high word accuracy and name orukeet-metal-q8 (registry install) or
+orukeet-r3-q8-metal (pip wheel) as the engine. If it names whisper instead, the Orukeet wiring is wrong even though the words match,
 so fix it rather than reporting success.
 
 Finally, report in this shape: the chip and RAM, every path you installed, the doctor

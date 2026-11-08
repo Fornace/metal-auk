@@ -53,7 +53,7 @@ By hand: see [docs/INSTALL.md](skills/auk/docs/INSTALL.md). Short version: clone
 MLX branch, pull 8-bit weights, build a Python 3.12 venv, add the dependencies upstream
 forgot to declare (jinja2, audioread, av, plus the Prompt Enhancer's openai import), then
 run `auk doctor`. Nothing depends on a fixed home directory: `AUK_HOME`, `AUK_WEIGHTS`,
-`AUK_ORUKEET`, `AUK_PE_CONFIG` and `AUK_MLX_CACHE_LIMIT` move every path, and `auk env`
+`AUK_ORUKEET_BIN`, `AUK_ORUKEET`, `AUK_PE_CONFIG` and `AUK_MLX_CACHE_LIMIT` move every path, and `auk env`
 prints what a run will use and exits 1 when something required is missing.
 
 The skill is meant to live at `~/.pi/agent/skills/auk`, which can be a symlink to
@@ -185,7 +185,8 @@ Tencent's:
   research license
 - 8-bit MLX weights: [smcleod/AuK-MLX-8bit](https://huggingface.co/smcleod/AuK-MLX-8bit)
 - Official weights: tencent/AuK and tencent/AuK-Flash on Hugging Face
-- Verifier: [Orukeet](https://github.com/Oruk-AI/orukeet)
+- Verifier: [Orukeet](https://github.com/Oruk-AI/orukeet); on Fornace Macs its native NeMo-Speech.cpp Metal build
+  (model registry `orukeet`)
 
 Code in this repo is MIT, see [LICENSE](LICENSE). No model weights are hosted
 here.

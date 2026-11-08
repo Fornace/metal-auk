@@ -6,7 +6,9 @@ see what a run will actually use before paying for a model load.
 
     AUK_HOME              install root holding the repo, the venv and ckpts
     AUK_WEIGHTS           weights directory, default $AUK_HOME/ckpts/mlx-8bit
-    AUK_ORUKEET           Orukeet installation.json used by `verify`
+    AUK_ORUKEET_BIN       Orukeet CLI used by `verify` (default ~/Models/orukeet-current/bin/orukeet,
+                          mac-models `./install.sh orukeet`)
+    AUK_ORUKEET           fallback: the pip package's installation.json
     AUK_PE_CONFIG         pe.config.yaml used by `pe`
     AUK_MLX_CACHE_LIMIT   GB cap on MLX's allocator cache, default 4
     LLM_BASE_URL, LLM_API_KEY, LLM_MODEL_NAME   OpenAI-compatible endpoint for `pe`
@@ -38,6 +40,10 @@ def install_root() -> str:
 
 def weights_dir(root: str | None = None) -> str:
     return _expand(os.environ.get("AUK_WEIGHTS"), os.path.join(root or install_root(), "ckpts/mlx-8bit"))
+
+
+def orukeet_bin() -> str:
+    return _expand(os.environ.get("AUK_ORUKEET_BIN"), "~/Models/orukeet-current/bin/orukeet")
 
 
 def orukeet_install() -> str:
@@ -89,7 +95,8 @@ def resolve() -> dict:
                    "set_with": "create it: python3.12 -m venv <install_root>/.venv"},
         "weights": {"path": weights, "exists": os.path.isdir(weights), "required": True,
                     "variants": variants, "set_with": "AUK_WEIGHTS"},
-        "orukeet": {"path": orukeet, "exists": os.path.isfile(orukeet), "required": True,
+        "orukeet": {"path": orukeet_bin() if os.access(orukeet_bin(), os.X_OK) else orukeet,
+                    "exists": os.access(orukeet_bin(), os.X_OK) or os.path.isfile(orukeet), "required": True,
                     "set_with": "AUK_ORUKEET",
                     "used_by": "verify, and the clone length rule: a say without --seconds "
                                "transcribes the reference clip"},
