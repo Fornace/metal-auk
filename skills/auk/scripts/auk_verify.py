@@ -65,7 +65,7 @@ ORUKEET_BIN = Path(orukeet_bin())
 
 
 def _transcribe_orukeet(path: str) -> tuple[str, str, float]:
-    """Orukeet through the orukeet-metal CLI (mac-models `orukeet`, the fornace-speech toolkit); on a Mac without
+    """Orukeet through the orukeet-metal CLI (fornace-models `orukeet`, the fornace-speech toolkit); on a Mac without
     it, through the pip wheel's installation.json."""
     global _orukeet
     t0 = time.time()

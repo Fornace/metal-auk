@@ -27,7 +27,7 @@ Recon first, then tell me what you found before installing anything:
   reuse or replace it.
 
 On a Fornace Mac, install the release instead and skip to the checks:
-  cd ~/works/repos/mac-models && ./install.sh auk
+  cd ~/works/repos/fornace-models && ./install.sh auk
   (then run the checks below with ~/Models/auk-current/bin/auk in place of the venv python + auk.py)
 
 Otherwise install, with these defaults, and export AUK_HOME=~/works/repos/AuK (or wherever you
@@ -38,7 +38,7 @@ put the clone; the runner's default is the Fornace release, ~/Models/auk-current
 - venv:     cd ~/works/repos/AuK && uv venv --python 3.12 && uv pip install --python .venv/bin/python -e ".[mlx]"
 - upstream forgot to declare: uv pip install --python .venv/bin/python jinja2 audioread av
   mlx-whisper openai tencentcloud-sdk-python-asr
-- verifier: on a Fornace Mac `cd ~/works/repos/mac-models && ./install.sh orukeet` (native, used by default);
+- verifier: on a Fornace Mac `cd ~/works/repos/fornace-models && ./install.sh orukeet` (native, used by default);
   otherwise uv pip install --python .venv/bin/python
   https://github.com/Oruk-AI/orukeet/releases/download/v0.1.1/orukeet-0.1.1-py3-none-any.whl
   then .venv/bin/orukeet install --device auto --cache $AUK_HOME/orukeet

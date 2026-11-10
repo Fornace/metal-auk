@@ -41,7 +41,7 @@ Lengths are computed from upstream's own duration rules, ported and tested, so
 On a Fornace Mac AuK installs as one release at `~/Models/auk-current`: the 8-bit weights, a
 self-contained CPython 3.12 with the pinned dependencies, the AuK MLX source and this runner, with
 `bin/auk` as the CLI and `generation.json` carrying the card's settings. The private registry installs
-and verifies it from Cloudflare R2: `Fornace/mac-models`, `./install.sh auk`.
+and verifies it from Cloudflare R2: `Fornace/fornace-models`, `./install.sh auk`.
 Quality work (references, dialogue) uses `--variant base` (32 steps, CFG 2.0); flash is for drafts.
 
 

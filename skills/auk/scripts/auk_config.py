@@ -4,11 +4,11 @@ Nothing here is machine specific. Every path comes from an environment variable 
 layout this project uses as the default, so an install can sit anywhere and an agent can
 see what a run will actually use before paying for a model load.
 
-    AUK_HOME              install root: the mac-models release (default ~/Models/auk-current, with
+    AUK_HOME              install root: the fornace-models release (default ~/Models/auk-current, with
                           `python`, `src` and `weights`) or an upstream clone (`.venv`, `src`, `ckpts`)
     AUK_WEIGHTS           weights directory, default $AUK_HOME/weights, else $AUK_HOME/ckpts/mlx-8bit
     AUK_ORUKEET_BIN       Orukeet CLI used by `verify` (default ~/Models/orukeet-current/bin/orukeet,
-                          mac-models `./install.sh orukeet`)
+                          fornace-models `./install.sh orukeet`)
     AUK_ORUKEET           only where that CLI is absent: the pip wheel's installation.json,
                           default $AUK_HOME/orukeet/installation.json
     AUK_PE_CONFIG         pe.config.yaml used by `pe`
@@ -111,7 +111,7 @@ def resolve() -> dict:
         "install_root": {"path": root, "exists": os.path.isdir(root), "required": True,
                          "set_with": "AUK_HOME"},
         "python": {"path": python, "exists": os.path.isfile(python), "required": True,
-                   "set_with": "install the release (mac-models install.sh auk) or create <install_root>/.venv"},
+                   "set_with": "install the release (fornace-models install.sh auk) or create <install_root>/.venv"},
         "weights": {"path": weights, "exists": os.path.isdir(weights), "required": True,
                     "variants": variants, "set_with": "AUK_WEIGHTS"},
         "orukeet": {"path": orukeet or orukeet_bin(), "exists": orukeet is not None, "required": True,

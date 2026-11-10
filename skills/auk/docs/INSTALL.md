@@ -21,7 +21,7 @@ required path is absent. `METAL_AUK` below stands for the clone of this repo.
 ## On a Fornace Mac: the release
 
 ```bash
-cd ~/works/repos/mac-models && ./install.sh auk
+cd ~/works/repos/fornace-models && ./install.sh auk
 ~/Models/auk-current/bin/auk doctor && ~/Models/auk-current/bin/auk env
 ```
 
@@ -85,7 +85,7 @@ On a Fornace Mac, install the native build once through the model registry. `ver
 (`~/Models/orukeet-current/bin/orukeet`, override with `AUK_ORUKEET_BIN`), 0.25 s per clip:
 
 ```bash
-cd ~/works/repos/mac-models && ./install.sh orukeet
+cd ~/works/repos/fornace-models && ./install.sh orukeet
 ```
 
 Elsewhere, the pip wheel (read through `AUK_ORUKEET` when the CLI is absent):

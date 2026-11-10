@@ -9,7 +9,7 @@ AuK (Tencent-Hunyuan, branch `feat/mlx-apple-silicon`, MLX backend) generates an
 speech in one instruction-driven model. Everything runs locally on the GPU of an
 Apple Silicon Mac; 8-bit quantization is the validated default.
 
-On a Fornace Mac the install is the release at `~/Models/auk-current` (mac-models
+On a Fornace Mac the install is the release at `~/Models/auk-current` (fornace-models
 `./install.sh auk`, from Cloudflare R2): `bin/auk`, its own CPython 3.12 with AuK's dependencies,
 the AuK MLX source, this runner and `weights/` (smcleod/AuK-MLX-8bit, 8.3 GB, flash + base +
 thinker). Elsewhere, see [docs/INSTALL.md](docs/INSTALL.md) before touching the environment, or
