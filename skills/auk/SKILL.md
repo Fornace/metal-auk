@@ -32,6 +32,8 @@ Around AuK, the `fornace-speech` skill has the native speech tools: `melband` pu
 with word times and speakers, and `ears` scores quality, emotion and vocal sounds, useful to pick the best of
 several takes.
 
+Italian speech generation is `fornace-voice` (skill `fornace-voice`); AuK stays for voice editing, restoration, cloning a voice from a clip and other languages.
+
 ## Run it
 
 ```bash
